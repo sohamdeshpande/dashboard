@@ -2,7 +2,7 @@ name: Update CSV Daily
 
 on:
   schedule:
-    - cron: "0 18 * * *"  # Run daily at 18:00 UTC
+    - cron: "0 18 * * *"  # Run daily at 18:00 UTC (adjust if needed)
   workflow_dispatch:  # Allow manual trigger
 
 jobs:
@@ -19,9 +19,9 @@ jobs:
           python-version: "3.x"
 
       - name: Install dependencies
-        run: pip install yfinance pandas numpy requests
+        run: pip install -r requirements.txt
 
       - name: Run update script
-        run: python update_csv.py
+        run: python scripts/refresh_csv.py  # Updated path to the script
         env:
           GITHUB_TOKEN: ${{ secrets.TOKEN_GITHUB }}
