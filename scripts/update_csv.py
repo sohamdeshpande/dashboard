@@ -11,7 +11,7 @@ import os
 GITHUB_TOKEN = os.getenv("GITHUB_TOKEN")
 REPO_OWNER = "sohamdeshpande"
 REPO_NAME = "dashboard"
-CSV_FILE_PATH = "../data/ADANIENT.NS.csv"
+CSV_FILE_PATH = "data/ADANIENT.NS.csv"
 STOCK_NAME = "ADANIENT.NS"
 
 def get_existing_csv():
