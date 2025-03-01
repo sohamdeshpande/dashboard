@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nifty 50 Stock Recommendations</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        table { border-collapse: collapse; width: 80%; margin: 20px auto; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: center; }
+        th { background-color: #f2f2f2; }
+        .signal-BUY { color: green; font-weight: bold; }
+        .signal-SELL { color: red; font-weight: bold; }
+        .signal-HOLD { color: orange; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+<h1>Nifty 50 Stock Recommendations</h1>
+<p>Data Refreshed on: <span id="refreshedDate">Loading...</span></p>
+<table>
+    <thead>
+        <tr>
+            <th>Stock Name</th>
+            <th>Latest Close Price</th>
+            <th>Signal</th>
+        </tr>
+    </thead>
+    <tbody id="stockTable">
+        <tr><td colspan="3">Loading...</td></tr>
+    </tbody>
+</table>
+
+<script>
+    const GITHUB_USER = "sohamdeshpande";
+    const REPO_NAME = "dashboard";
+    const CSV_PATH = "ADANIENT.NS.csv";
+    const GITHUB_API = `https://api.github.com/repos/${GITHUB_USER}/${REPO_NAME}/contents/${CSV_PATH}`;
+
+    async function fetchCSV() {
+        try {
+            const response = await fetch(GITHUB_API);
+            const data = await response.json();
+            const decodedContent = atob(data.content);
+            return decodedContent;
+        } catch (error) {
+            console.error("Error fetching CSV:", error);
+            document.getElementById("stockTable").innerHTML = "<tr><td colspan='3'>Failed to load data.</td></tr>";
+        }
+    }
+
+    function parseCSV(csvContent) {
+        const rows = csvContent.trim().split("\n");
+        const headers = rows[0].split(",");
+        const lastRow = rows[rows.length - 1].split(",");
+
+        const stockName = "ADANIENT.NS";
+        const closePrice = lastRow[headers.indexOf("Close")];
+        const signal = lastRow[headers.indexOf("Signal")];
+        const lastDate = lastRow[0];
+
+        return { stockName, closePrice, signal, lastDate };
+    }
+
+    function renderTable(data) {
+        const { stockName, closePrice, signal, lastDate } = data;
+
+        document.getElementById("refreshedDate").textContent = lastDate;
+        document.getElementById("stockTable").innerHTML = `
+            <tr>
+                <td>${stockName}</td>
+                <td>${parseFloat(closePrice).toFixed(2)}</td>
+                <td class="signal-${signal}">${signal}</td>
+            </tr>
+        `;
+    }
+
+    async function initDashboard() {
+        const csvContent = await fetchCSV();
+        if (csvContent) {
+            const data = parseCSV(csvContent);
+            renderTable(data);
+        }
+    }
+
+    initDashboard();
+</script>
+
+</body>
+</html>
