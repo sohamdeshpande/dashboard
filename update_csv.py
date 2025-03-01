@@ -93,12 +93,13 @@ def update_csv_on_github(df, sha):
         print("❌ Error updating CSV:", response.status_code, response.json())
 
 def main():
-    df, sha = get_existing_csv()
-    if df is not None:
-        new_data = get_last_day_data()
-        df = pd.concat([df, new_data]).drop_duplicates()
-        df = update_indicators(df)
-        update_csv_on_github(df, sha)
+    print(f'''this is token {GITHUB_TOKEN}''')
+    # df, sha = get_existing_csv()
+    # if df is not None:
+    #     new_data = get_last_day_data()
+    #     df = pd.concat([df, new_data]).drop_duplicates()
+    #     df = update_indicators(df)
+    #     update_csv_on_github(df, sha)
 
 if __name__ == "__main__":
     main()
