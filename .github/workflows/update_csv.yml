@@ -22,6 +22,6 @@ jobs:
         run: pip install -r requirements.txt
 
       - name: Run update script
-        run: python scripts/refresh_csv.py  # Updated path to the script
+        run: python scripts/update_csv.py  # Updated path to the script
         env:
           GITHUB_TOKEN: ${{ secrets.TOKEN_GITHUB }}
