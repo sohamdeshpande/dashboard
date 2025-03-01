@@ -8,7 +8,7 @@ from datetime import datetime
 import io
 import os
 
-GITHUB_TOKEN = os.getenv("TOKEN_GITHUB")
+GITHUB_TOKEN = os.getenv("GITHUB_TOKEN")
 REPO_OWNER = "sohamdeshpande"
 REPO_NAME = "dashboard"
 CSV_FILE_PATH = "ADANIENT.NS.csv"
