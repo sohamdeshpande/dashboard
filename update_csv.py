@@ -22,7 +22,7 @@ def get_existing_csv():
     if response.status_code == 200:
         content = response.json()["content"]
         decoded_content = base64.b64decode(content).decode('utf-8')
-        df = pd.read_csv(pd.compat.StringIO(decoded_content), index_col=0, parse_dates=True)
+        df = pd.read_csv(io.StringIO(decoded_content), index_col=0, parse_dates=True)
         sha = response.json()["sha"]  # Required for updating the file
         return df, sha
     else:
