@@ -13,12 +13,11 @@
 
         table {
             border-collapse: collapse;
-            width: 80%;
+            width: 90%;
             margin: 20px auto;
         }
 
-        th,
-        td {
+        th, td {
             border: 1px solid #ddd;
             padding: 8px;
             text-align: center;
@@ -49,17 +48,23 @@
 
 <h1>Nifty 50 Stock Recommendations</h1>
 <p>Data Refreshed on: <span id="refreshedDate">Loading...</span></p>
+<p>Loading Time: <span id="loadingTime">Calculating...</span> seconds</p>
+
 <table>
     <thead>
         <tr>
             <th>Stock Name</th>
             <th>Latest Close Price</th>
+            <th>50 DMA</th>
+            <th>200 DMA</th>
+            <th>VWMA 50</th>
+            <th>RSI</th>
             <th>Signal</th>
         </tr>
     </thead>
     <tbody id="stockTable">
         <tr>
-            <td colspan="3">Loading...</td>
+            <td colspan="7">Loading...</td>
         </tr>
     </tbody>
 </table>
@@ -67,8 +72,7 @@
 <script>
     const GITHUB_USER = "sohamdeshpande";
     const REPO_NAME = "dashboard";
-    const STOCKS = [
-    'ADANIENT.NS',
+    const STOCKS = ['ADANIENT.NS',
  'ADANIPORTS.NS',
  'APOLLOHOSP.NS',
  'ASIANPAINT.NS',
@@ -117,9 +121,10 @@
  'TITAN.NS',
  'TRENT.NS',
  'ULTRACEMCO.NS',
- 'WIPRO.NS'
-        // Add all 50 stock names here...
-    ];
+ 'WIPRO.NS'];
+
+    // Measure start time
+    const startTime = performance.now();
 
     async function fetchCSV(stock) {
         const CSV_PATH = `data/${stock}.csv`;
@@ -141,10 +146,14 @@
         const lastRow = rows[rows.length - 1].split(",");
 
         const closePrice = lastRow[headers.indexOf("Close")];
+        const dma50 = lastRow[headers.indexOf("50_DMA")];
+        const dma200 = lastRow[headers.indexOf("200_DMA")];
+        const vwma50 = lastRow[headers.indexOf("VWMA_50")];
+        const rsi = lastRow[headers.indexOf("RSI")];
         const signal = lastRow[headers.indexOf("Signal")];
         const lastDate = lastRow[0];
 
-        return { stockName, closePrice, signal, lastDate };
+        return { stockName, closePrice, dma50, dma200, vwma50, rsi, signal, lastDate };
     }
 
     function renderTable(stockData) {
@@ -152,11 +161,15 @@
         tableBody.innerHTML = "";  // Clear existing rows
 
         stockData.forEach(data => {
-            const { stockName, closePrice, signal, lastDate } = data;
+            const { stockName, closePrice, dma50, dma200, vwma50, rsi, signal, lastDate } = data;
             const row = `
                 <tr>
                     <td>${stockName}</td>
                     <td>${parseFloat(closePrice).toFixed(2)}</td>
+                    <td>${parseFloat(dma50).toFixed(2)}</td>
+                    <td>${parseFloat(dma200).toFixed(2)}</td>
+                    <td>${parseFloat(vwma50).toFixed(2)}</td>
+                    <td>${parseFloat(rsi).toFixed(2)}</td>
                     <td class="signal-${signal}">${signal}</td>
                 </tr>
             `;
@@ -164,6 +177,11 @@
         });
 
         document.getElementById("refreshedDate").textContent = stockData[0]?.lastDate || "Unknown";
+
+        // Measure end time and display loading time
+        const endTime = performance.now();
+        const loadingTime = ((endTime - startTime) / 1000).toFixed(2);
+        document.getElementById("loadingTime").textContent = loadingTime;
     }
 
     async function initDashboard() {
@@ -181,7 +199,7 @@
         if (stockData.length > 0) {
             renderTable(stockData);
         } else {
-            document.getElementById("stockTable").innerHTML = "<tr><td colspan='3'>Failed to load data.</td></tr>";
+            document.getElementById("stockTable").innerHTML = "<tr><td colspan='7'>Failed to load data.</td></tr>";
         }
     }
 
