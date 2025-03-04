@@ -67,6 +67,7 @@ def get_existing_csv(STOCK_NAME):
     # Get the existing CSV from GitHub
     CSV_FILE_PATH = f'''data/{STOCK_NAME}'''
     url = f"https://api.github.com/repos/{REPO_OWNER}/{REPO_NAME}/contents/{CSV_FILE_PATH}"
+    print(f'''this is url {url}''')
     headers = {"Authorization": f"Bearer {GITHUB_TOKEN}"}
     response = requests.get(url, headers=headers)
     if response.status_code == 200:
