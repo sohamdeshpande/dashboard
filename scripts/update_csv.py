@@ -12,10 +12,60 @@ GITHUB_TOKEN = os.getenv("GITHUB_TOKEN")
 REPO_OWNER = "sohamdeshpande"
 REPO_NAME = "dashboard"
 CSV_FILE_PATH = "data/ADANIENT.NS.csv"
-STOCK_NAME = "ADANIENT.NS"
+STOCK_NAME = ['ADANIENT.NS',
+ 'ADANIPORTS.NS',
+ 'APOLLOHOSP.NS',
+ 'ASIANPAINT.NS',
+ 'AXISBANK.NS',
+ 'BAJAJ-AUTO.NS',
+ 'BAJFINANCE.NS',
+ 'BAJAJFINSV.NS',
+ 'BEL.NS',
+ 'BPCL.NS',
+ 'BHARTIARTL.NS',
+ 'BRITANNIA.NS',
+ 'CIPLA.NS',
+ 'COALINDIA.NS',
+ 'DRREDDY.NS',
+ 'EICHERMOT.NS',
+ 'GRASIM.NS',
+ 'HCLTECH.NS',
+ 'HDFCBANK.NS',
+ 'HDFCLIFE.NS',
+ 'HEROMOTOCO.NS',
+ 'HINDALCO.NS',
+ 'HINDUNILVR.NS',
+ 'ICICIBANK.NS',
+ 'ITC.NS',
+ 'INDUSINDBK.NS',
+ 'INFY.NS',
+ 'JSWSTEEL.NS',
+ 'KOTAKBANK.NS',
+ 'LT.NS',
+ 'M&M.NS',
+ 'MARUTI.NS',
+ 'NTPC.NS',
+ 'NESTLEIND.NS',
+ 'ONGC.NS',
+ 'POWERGRID.NS',
+ 'RELIANCE.NS',
+ 'SBILIFE.NS',
+ 'SHRIRAMFIN.NS',
+ 'SBIN.NS',
+ 'SUNPHARMA.NS',
+ 'TCS.NS',
+ 'TATACONSUM.NS',
+ 'TATAMOTORS.NS',
+ 'TATASTEEL.NS',
+ 'TECHM.NS',
+ 'TITAN.NS',
+ 'TRENT.NS',
+ 'ULTRACEMCO.NS',
+ 'WIPRO.NS']
 
-def get_existing_csv():
+def get_existing_csv(STOCK_NAME):
     # Get the existing CSV from GitHub
+    CSV_FILE_PATH = f'''data/{STOCK_NAME}'''
     url = f"https://api.github.com/repos/{REPO_OWNER}/{REPO_NAME}/contents/{CSV_FILE_PATH}"
     headers = {"Authorization": f"Bearer {GITHUB_TOKEN}"}
     response = requests.get(url, headers=headers)
@@ -29,7 +79,7 @@ def get_existing_csv():
         print("Error fetching CSV:", response.status_code)
         return None, None
     
-def get_last_day_data():
+def get_last_day_data(STOCK_NAME):
     # Fetch latest data for the last day
     stock_data = yf.download(STOCK_NAME, period="2d", interval="1d")
     if isinstance(stock_data.columns, pd.MultiIndex):
@@ -83,6 +133,7 @@ def update_csv_on_github(df, sha):
     }
 
     # Upload updated CSV to GitHub
+    CSV_FILE_PATH = f'''data/{STOCK_NAME}'''
     url = f"https://api.github.com/repos/{REPO_OWNER}/{REPO_NAME}/contents/{CSV_FILE_PATH}"
     headers = {"Authorization": f"Bearer {GITHUB_TOKEN}"}
     response = requests.put(url, headers=headers, data=json.dumps(commit_data))
@@ -93,12 +144,13 @@ def update_csv_on_github(df, sha):
         print("❌ Error updating CSV:", response.status_code, response.json())
 
 def main():
-    df, sha = get_existing_csv()
-    if df is not None:
-        new_data = get_last_day_data()
-        df = pd.concat([df, new_data]).drop_duplicates()
-        df = update_indicators(df)
-        update_csv_on_github(df, sha)
+    for STOCK in STOCK_NAME:
+        df, sha = get_existing_csv(STOCK)
+        if df is not None:
+            new_data = get_last_day_data(STOCK)
+            df = pd.concat([df, new_data]).drop_duplicates()
+            df = update_indicators(df)
+            update_csv_on_github(df, sha)
 
 if __name__ == "__main__":
     main()
