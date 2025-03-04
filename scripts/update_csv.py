@@ -65,7 +65,7 @@ STOCK_NAME = ['ADANIENT.NS',
 
 def get_existing_csv(STOCK_NAME):
     # Get the existing CSV from GitHub
-    CSV_FILE_PATH = f'''data/{STOCK_NAME}'''
+    CSV_FILE_PATH = f'''data/{STOCK_NAME}.csv'''
     url = f"https://api.github.com/repos/{REPO_OWNER}/{REPO_NAME}/contents/{CSV_FILE_PATH}"
     print(f'''this is url {url}''')
     headers = {"Authorization": f"Bearer {GITHUB_TOKEN}"}
