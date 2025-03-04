@@ -120,7 +120,7 @@ def update_indicators(df):
 
     return df
 
-def update_csv_on_github(df, sha):
+def update_csv_on_github(df, sha, STOCK_NAME):
     # Convert DataFrame to CSV string
     csv_content = df.to_csv()
     encoded_content = base64.b64encode(csv_content.encode()).decode()
@@ -134,7 +134,7 @@ def update_csv_on_github(df, sha):
     }
 
     # Upload updated CSV to GitHub
-    CSV_FILE_PATH = f'''data/{STOCK_NAME}'''
+    CSV_FILE_PATH = f'''data/{STOCK_NAME}.csv'''
     url = f"https://api.github.com/repos/{REPO_OWNER}/{REPO_NAME}/contents/{CSV_FILE_PATH}"
     headers = {"Authorization": f"Bearer {GITHUB_TOKEN}"}
     response = requests.put(url, headers=headers, data=json.dumps(commit_data))
@@ -151,7 +151,7 @@ def main():
             new_data = get_last_day_data(STOCK)
             df = pd.concat([df, new_data]).drop_duplicates()
             df = update_indicators(df)
-            update_csv_on_github(df, sha)
+            update_csv_on_github(df, sha, STOCK)
 
 if __name__ == "__main__":
     main()
