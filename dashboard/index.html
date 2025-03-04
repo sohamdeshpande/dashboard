@@ -128,7 +128,7 @@
             const response = await fetch(RAW_GITHUB_URL);
             if (!response.ok) throw new Error(`Failed to fetch CSV for ${stock}`);
             const csvContent = await response.text();
-            return csvContent;
+            return { stock, csvContent };
         } catch (error) {
             console.error("Error fetching CSV:", error);
             return null;
@@ -169,10 +169,11 @@
     async function initDashboard() {
         const stockData = [];
 
+        // Loop through each stock and fetch its CSV
         for (const stock of STOCKS) {
-            const csvContent = await fetchCSV(stock);
-            if (csvContent) {
-                const data = parseCSV(csvContent, stock);
+            const result = await fetchCSV(stock);
+            if (result && result.csvContent) {
+                const data = parseCSV(result.csvContent, result.stock);
                 stockData.push(data);
             }
         }
